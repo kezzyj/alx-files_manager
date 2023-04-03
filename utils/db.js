@@ -1,56 +1,43 @@
-/*
- * Create the client part with mongo db
- */
-
 import { MongoClient } from 'mongodb';
+import { env } from 'process';
 
 class DBClient {
   constructor() {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || 27017;
-    const database = process.env.DB_DATABASE || 'files_manager';
+    const { DB_HOST, DB_PORT, DB_DATABASE } = env;
+    this.host = DB_HOST || 'localhost';
+    this.port = DB_PORT || 27017;
+    this.dbName = DB_DATABASE || 'files_manager';
 
-    const uri = `mongodb://${host}:${port}/${database}`;
-
-    this.client = new MongoClient(uri, {
+    MongoClient(`mongodb://${this.host}:${this.port}`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    });
+    })
+      .connect()
+      .then((client) => {
+        this.client = client;
+        this.db = this.client.db(this.dbName);
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
   }
 
-  isAlive = async () => {
-    try {
-      await this.client.connect();
-      await this.client.db().admin().ping();
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
+  isAlive() {
+    if (this.db) return true;
+    return false;
+  }
 
-  nbUsers = async () => {
-    try {
-      await this.client.connect();
-      const usersCollection = this.client.db().collection('users');
-      const nbUsers = await usersCollection.countDocuments();
-      return nbUsers;
-    } catch (error) {
-      return error;
-    }
-  };
+  async nbUsers() {
+    const collection = this.db.collection('users');
+    return collection.countDocuments();
+  }
 
-  nbFiles = async () => {
-    try {
-      await this.client.connect();
-      const filesCollection = this.client.db().collection('files');
-      const nbFiles = await filesCollection.countDocuments();
-      return nbFiles;
-    } catch (error) {
-      return error;
-    }
-  };
+  async nbFiles() {
+    const collection = this.db.collection('files');
+    return collection.countDocuments();
+  }
 }
 
 const dbClient = new DBClient();
 
-export { dbClient };
+export default dbClient;

@@ -1,4 +1,8 @@
-const { MongoClient } = require('mongodb');
+/*
+ * Create the client part with mongo db
+ */
+
+import { MongoClient } from 'mongodb';
 
 class DBClient {
   constructor() {
@@ -8,10 +12,13 @@ class DBClient {
 
     const uri = `mongodb://${host}:${port}/${database}`;
 
-    this.client = new MongoClient(uri);
+    this.client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
   }
 
-  async isAlive() {
+  isAlive = async () => {
     try {
       await this.client.connect();
       await this.client.db().admin().ping();
@@ -19,9 +26,9 @@ class DBClient {
     } catch (error) {
       return false;
     }
-  }
+  };
 
-  async nbUsers() {
+  nbUsers = async () => {
     try {
       await this.client.connect();
       const usersCollection = this.client.db().collection('users');
@@ -30,9 +37,9 @@ class DBClient {
     } catch (error) {
       return error;
     }
-  }
+  };
 
-  async nbFiles() {
+  nbFiles = async () => {
     try {
       await this.client.connect();
       const filesCollection = this.client.db().collection('files');
@@ -41,9 +48,9 @@ class DBClient {
     } catch (error) {
       return error;
     }
-  }
+  };
 }
 
 const dbClient = new DBClient();
 
-module.exports = { dbClient };
+export { dbClient };

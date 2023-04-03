@@ -7,7 +7,7 @@ import {
 } from 'redis';
 import {
   promisify,
-} from 'util'
+} from 'util';
 
 class RedisClient {
   constructor() {
@@ -22,18 +22,18 @@ class RedisClient {
   }
 
   async get(key) {
-    const getAsync = promisify(this.client.get).bind(this.client);
-    return getAsync(key);
+    const getAsyncfunc = promisify(this.client.get).bind(this.client);
+    return getAsyncfunc(key);
   }
 
   async set(key, value, duration) {
-    const setAsync = promisify(this.client.set).bind(this.client);
-    return setAsync(key, value, 'EX', duration);
+    const setAsyncfunc = promisify(this.client.set).bind(this.client);
+    return setAsyncfunc(key, value, 'EX', duration);
   }
 
   async del(key) {
-    const delAsync = promisify(this.client.del).bind(this.client);
-    return delAsync(key);
+    const delAsyncfunc = promisify(this.client.del).bind(this.client);
+    return delAsyncfunc(key);
   }
 }
 

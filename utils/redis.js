@@ -2,8 +2,8 @@
  * Create a redis client class and some helper functions
  */
 
-import redis, from 'redis';
-import promisify, from 'utils';
+import redis from 'redis';
+import { promisify } from 'utils';
 
 class RedisClient {
   constructor() {
